@@ -24,6 +24,26 @@ BOOL winPressed = FALSE;
 
 Settings settings = { .popup = FALSE };
 
+int IsCapsLockOn() {
+    // Get the state of the Caps Lock key
+    SHORT state = GetKeyState(VK_CAPITAL);
+
+    // Check if the high-order bit is set (Caps Lock is on)
+    return (state & 0x0001) != 0;
+}
+
+// Function to toggle the Caps Lock key
+void ToggleCapsLock() {
+    // Virtual Key Code for Caps Lock
+    const int CAPS_LOCK_KEY = VK_CAPITAL;
+
+    // Simulate a key press event
+    keybd_event(CAPS_LOCK_KEY, 0, 0, 0);
+
+    // Simulate a key release event
+    keybd_event(CAPS_LOCK_KEY, 0, KEYEVENTF_KEYUP, 0);
+}
+
 int main(int argc, char** argv) {
     if (argc > 1 && strcmp(argv[1], "nopopup") == 0) {
         settings.popup = FALSE;
@@ -47,7 +67,10 @@ int main(int argc, char** argv) {
         ShowError("Error calling \"SetWindowsHookEx(...)\"");
         return 1;
     }
+    if (IsCapsLockOn()) {
 
+        ToggleCapsLock();
+    }
     MSG messages;
     while (GetMessage(&messages, NULL, 0, 0)) {
         TranslateMessage(&messages);
